@@ -1,7 +1,6 @@
 package CurlingCalendar::Controller::Root;
 use Mojo::Base 'Mojolicious::Controller';
 
-use Data::Printer;
 use Data::ICal::DateTime;
 use Data::ICal;
 use Data::ICal::Entry::Event;

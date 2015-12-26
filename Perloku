@@ -1,0 +1,2 @@
+#!/bin/sh
+./script/curling_calendar daemon --listen http://*:$PORT --mode production
