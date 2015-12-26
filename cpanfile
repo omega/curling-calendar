@@ -1,4 +1,5 @@
 requires      'Mojolicious' , '6.38';
+requires      'Mojolicious::Plugin::CHI', '0.01';
 requires      'Path::Tiny'  , '0.01';
 requires      'HTTP::Tiny'  , '0.01';
 requires      'Encode'      , '0.01';
