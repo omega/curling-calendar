@@ -11,11 +11,11 @@ WriteMakefile(
   AUTHOR       => 'Andreas Marienborg <omega@palle.net>',
   EXE_FILES    => ['script/curling_calendar'],
   PREREQ_PM    => {
-      'Mojolicious' => '6.80',
-      'Path::Tiny'  => '0.1',
-      'HTTP::Tiny'  => '0.1',
-      'Encode'      => '0.1',
-      'Data::ICal'  => '0.1',
+      'Mojolicious' => '6.38',
+      'Path::Tiny'  => '0.01',
+      'HTTP::Tiny'  => '0.01',
+      'Encode'      => '0.01',
+      'Data::ICal'  => '0.01',
       'Data::ICal::DateTime' => '0.1',
   },
   test         => {TESTS => 't/*.t'}
