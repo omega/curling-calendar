@@ -66,7 +66,7 @@ sub startup {
                 my $res = HTTP::Tiny->new->get($url);
 
                 my $content = Encode::decode_utf8( $res->{content} );
-                $c->chi->set($cache_key => $content);
+                $c->chi->set($cache_key => $content, expires_in => '1 day');
                 $parser->(Mojo::DOM->new($content), $cb);
             }
         });
