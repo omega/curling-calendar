@@ -10,3 +10,10 @@ iphone</p>
 dette er rett: <em><%= url_for('/')->to_abs %>OACK/år/divisjonsnr/Lag-navn.ical</em> For eksempel:
 <%= url_for('/OACK/2016/2/Marienborg.ical')->to_abs %>
 
+
+<h2>Tabeller</h2>
+<ul>
+% foreach (1..3) {
+<li><%= link_to "$_. divisjon", url_for("/OACK/2016/$_") %></li>
+% }
+</ul>

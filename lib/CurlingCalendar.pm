@@ -32,43 +32,52 @@ sub startup {
     # Normal route to controller
     $r->get('/')->to('root#index');
 
-    $r->get('/:league/:year/:division/:team')->to('root#division');
+    $r->get('/:league/:year/:division')->to('root#division');
+    $r->get('/:league/:year/:division/:team')->to('root#team');
 
 
-    $self->helper('curling.fetch_league' => sub {
+    $self->helper('curling.fetch_division' => sub {
             my ($c, $cb) = @_;
-            my $league = $c->stash->{league};
-            my $year = $c->stash->{year};
-            my $division = $c->stash->{division};
-            my $team = $c->stash->{team};
-            my $cache_key = join("_", $league, $year, $division);
-
-            my $parser = sub {
-                my ($dom, $cb) = @_;
-                # We should parse it all, and call the $cb with some sort of
-                # structure
-                $c->app->log->debug("In the parser");
-                my $season = CurlingCalendar::Model::Data->get_season($league, $year, $division, $dom);
-                if ($team) {
-                    $season = $season->matches_for_team($team);
+            $c->curling->fetch_season(sub {
+                    $cb->(shift->as_table);
                 }
-                $cb->($season);
-            };
+            );
 
-            if (my $html = $c->chi->get($cache_key)) {
+        }
+    );
+
+
+    $self->helper('curling.fetch_team' => sub {
+            my ($c, $cb) = @_;
+            $c->curling->fetch_season(sub {
+                    $cb->(shift->matches_for_team($c->stash->{team}));
+                }
+            );
+        }
+    );
+    $self->helper('curling.fetch_season' => sub {
+            my ($c, $parser) = @_;
+            my $division = $c->stash->{division};
+            my $cache_key = join("_", $c->stash->{league}, $c->stash->{year}, $division);
+
+            my $html;
+
+            if ($html = $c->chi->get($cache_key)) {
                 $c->app->log->debug("found $cache_key in cache");
-                my $dom = Mojo::DOM->new( $html );
-                $parser->($dom, $cb);
             } else {
                 my $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
                 $c->app->log->debug("Fetching content from $url");
 
                 my $res = HTTP::Tiny->new->get($url);
 
-                my $content = Encode::decode_utf8( $res->{content} );
-                $c->chi->set($cache_key => $content, expires_in => '1 day');
-                $parser->(Mojo::DOM->new($content), $cb);
+                $html = Encode::decode_utf8( $res->{content} );
+                $c->chi->set($cache_key => $html, '1 day');
             }
+            my $season = CurlingCalendar::Model::Data->get_season(
+                $c->stash->{league}, $c->stash->{year}, $c->stash->{division},
+                Mojo::DOM->new( $html ),
+            );
+            $parser->($season);
         });
 }
 

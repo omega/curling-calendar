@@ -1,0 +1,9 @@
+% layout 'default';
+% title "$league - $division. divisjon";
+<table class="table">
+<tr><th>Name</th><th>Points</th><th>Played</th></tr>
+% $table->each(sub {
+% my $team = shift;
+<tr><td><%= link_to $team->{name}, url_for("/OACK/2016/$division/" . $team->{name}) %></td><td><%= $team->{points} %></td><td><%= $team->{played} %></td></tr>
+% });
+</table>

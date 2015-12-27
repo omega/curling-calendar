@@ -92,6 +92,45 @@ package CurlingCalendar::Model::Data::Season {
         );
     }
 
+    sub as_table {
+        my $self = shift;
+
+        # Re-format the data to a table?
+        my %teams = ();
+        $self->matches->each(sub {
+                my $m = shift;
+                for (qw/home away/) {
+                    $teams{$m->$_} = {
+                        name => $m->$_,
+                        points => 0,
+                        played => 0,
+                        beat => {},
+                    } unless exists $teams{$m->$_};
+                    $teams{$m->$_}->{played}++ if $m->result;
+                }
+                if ($m->result) {
+                    my $score = eval $m->result;
+                    if (eval $m->result > 0) {
+                        $teams{$m->home}->{points}++;
+                        $teams{$m->home}->{beat}->{$m->away} = 1;
+
+                    } else {
+                        $teams{$m->away}->{points}++;
+                        $teams{$m->away}->{beat}->{$m->home} = 1;
+                    }
+                }
+            }
+        );
+        my $table = CurlingCalendar::Model::Data::Table->new();
+        foreach my $t (sort { 
+                $teams{$b}->{points} <=> $teams{$a}->{points}
+                || # equal points, need to look at more data somehow..?
+                ($teams{$b}->{beat}->{$a} // 0) <=> ($teams{$a}->{beat}->{$b} // 0)
+            } keys %teams) {
+            push(@{ $table->entries }, $teams{$t});
+        }
+        return $table;
+    }
     sub description {
         my $self = shift;
         return sprintf("%s %d. divisjon %d/%d", $self->league, $self->division, $self->year-1, $self->year);
@@ -100,7 +139,15 @@ package CurlingCalendar::Model::Data::Season {
         return shift->matches;
     }
 };
-
+package CurlingCalendar::Model::Data::Table {
+    use Moo;
+    
+    has entries => (
+        is => 'ro',
+        default => sub { Mojo::Collection->new() },
+        handles => [qw/each size TO_JSON/],
+    );
+};
 package CurlingCalendar::Model::Data::Match {
     use Moo;
 
