@@ -111,18 +111,18 @@ package CurlingCalendar::Model::Data::Season {
                 if ($m->result) {
                     my $score = eval $m->result;
                     if (eval $m->result > 0) {
-                        $teams{$m->home}->{points}++;
+                        $teams{$m->home}->{points} += 2;
                         $teams{$m->home}->{beat}->{$m->away} = 1;
 
                     } else {
-                        $teams{$m->away}->{points}++;
+                        $teams{$m->away}->{points} += 2;
                         $teams{$m->away}->{beat}->{$m->home} = 1;
                     }
                 }
             }
         );
         my $table = CurlingCalendar::Model::Data::Table->new();
-        foreach my $t (sort { 
+        foreach my $t (sort {
                 $teams{$b}->{points} <=> $teams{$a}->{points}
                 || # equal points, need to look at more data somehow..?
                 ($teams{$b}->{beat}->{$a} // 0) <=> ($teams{$a}->{beat}->{$b} // 0)
@@ -141,7 +141,7 @@ package CurlingCalendar::Model::Data::Season {
 };
 package CurlingCalendar::Model::Data::Table {
     use Moo;
-    
+
     has entries => (
         is => 'ro',
         default => sub { Mojo::Collection->new() },
@@ -172,7 +172,7 @@ package CurlingCalendar::Model::Data::Match {
     sub uid {
         my $self = shift;
         my $season = shift;
-        return sprintf("%s/%d/%d.division/%s-%s", 
+        return sprintf("%s/%d/%d.division/%s-%s",
             $season->league, $season->year, $season->division,
             $self->home, $self->away
         );
@@ -186,17 +186,42 @@ package CurlingCalendar::Model::Data::Match {
     sub description {
         my $self = shift;
         my $season = shift;
-        return sprintf("%s: %s - %s%s", $season->league, 
+        return sprintf("%s: %s - %s%s", $season->league,
             $self->home, $self->away,
             ($self->result ? " (" . $self->result . ")" : "")
         );
     }
 
+    sub home_points {
+        my $self = shift;
+        return unless $self->result;
+        my ($pts) = ( $self->result =~ m|\d+ -| );
+        return $pts;
+    }
+    sub away_points {
+        my $self = shift;
+        return unless $self->result;
+        my ($pts) = ( $self->result =~ m|- \d+| );
+        return $pts;
+    }
     sub is_team_playing {
         my ($self, $team) = @_;
         $team = lc($team);
         return (lc($self->home) eq $team or lc($self->away) eq $team);
     }
+    sub is_team_victorious {
+        my ($self, $team) = @_;
+        $team = lc($team);
+        return unless $self->result;
+        return unless $self->is_team_playing($team);
+
+        if (eval $self->result > 0 and $team eq lc($self->home)) {
+            return 1;
+        } elsif(eval $self->result < 0  and $team eq lc($self->away)) {
+            return 1;
+        }
+    }
+
     sub TO_JSON {
         my $self = shift;
         return { %$self };

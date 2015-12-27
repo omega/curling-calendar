@@ -1,5 +1,76 @@
 <!DOCTYPE html>
 <html>
-  <head><title><%= title %></title></head>
-  <body><%= content %></body>
+    <head>
+        <title><%= title %></title>
+        <!-- Required meta tags always come first -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+<style>
+.navbar + .container {
+    margin-top: 2rem;
+}
+.results td, .results th {
+    text-align: right;
+}
+.results td:first-of-type, .results th:first-of-type {
+    text-align: left;
+}
+.matches th {
+    text-align: center;
+}
+.matches td:first-of-type {
+    text-align: right;
+}
+.matches .points{
+    text-align: center;
+}
+.matches .date td, .matches .date small {
+    line-height: 1;
+}
+.matches .date td  {
+    border-top: none;
+}
+.matches .own-team {
+    font-weight: bold;
+}
+
+.collapse.in ul {
+    display: block;
+        clear: both;
+}
+</style>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-primary navbar-full">
+                <a class="navbar-brand" href="<%= url_for('/') %>">Curling-kalendere</a>
+            <button class="navbar-toggler hidden-sm-up pull-xs-right" type="button" data-toggle="collapse" data-target="#divisionMenu">
+                &#9776;
+            </button>
+            <div class="collapse navbar-toggleable-xs" id="divisionMenu">
+                <ul class="nav navbar-nav">
+% foreach (1..3) {
+                    <li class="nav-item">
+                        <a href="<%= url_for("/OACK/2016/$_") %>" class="nav-link"><%= $_ %>. division</a>
+                    </li>
+% }
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <% if ($title) { %>
+                    <h2><%= $title %></h2>
+                    <% } %>
+                    <%= content %>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+    </body>
 </html>

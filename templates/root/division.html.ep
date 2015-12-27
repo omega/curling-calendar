@@ -1,9 +1,21 @@
 % layout 'default';
 % title "$league - $division. divisjon";
-<table class="table">
-<tr><th>Name</th><th>Points</th><th>Played</th></tr>
+<table class="table table-sm results">
+<thead class="thead-inverse">
+<tr>
+    <th>Name</th>
+    <th>Played</th>
+    <th>Points</th>
+</tr>
+</thead>
+<tbody>
 % $table->each(sub {
 % my $team = shift;
-<tr><td><%= link_to $team->{name}, url_for("/OACK/2016/$division/" . $team->{name}) %></td><td><%= $team->{points} %></td><td><%= $team->{played} %></td></tr>
+<tr>
+    <td><%= link_to $team->{name}, url_for("/OACK/2016/$division/" . $team->{name}) %></td>
+    <td><%= $team->{played} %></td>
+    <td><%= $team->{points} %></td>
+</tr>
 % });
+</tbody>
 </table>

@@ -1,15 +1,11 @@
 % layout 'default';
-% title 'Velkommen';
-<h1>Curling-kalendere</h1>
+% title 'Curling-kalendere';
 
 <p>Heisann! Denne siden lar deg lage kalender-filer for ditt lag, som du kan
 importere på telefonen din, eller på datamaskinen din. Det er testet på mac og
 iphone</p>
 
-<p>Foreløpig er det noe manuelt arbeid med å finne url til ditt lag, men ca som
-dette er rett: <em><%= url_for('/')->to_abs %>OACK/år/divisjonsnr/Lag-navn.ical</em> For eksempel:
-<%= url_for('/OACK/2016/2/Marienborg.ical')->to_abs %>
-
+<p>Gå til din divisjon, og ditt lag, for å finne en link til ditt lag sin kalender</p>
 
 <h2>Tabeller</h2>
 <ul>

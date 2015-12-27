@@ -1,11 +1,29 @@
 % layout 'default';
 % title "$league - $division. divisjon - $team";
-<table class="table">
-<tr><th>Match</th><th>Result</th></tr>
+<table class="table table-sm matches">
+<thead class="thead-inverse">
+<tr><th colspan="2">Home</th><th colspan="2">Away</th></tr>
+</thead>
+<tbody>
 % $events->each(sub {
 % my $match = shift;
-<tr><td><%= $match->home . " - " . $match->away %></td><td><%= $match->result %></td></tr>
+<tr class="<%= $match->is_team_victorious($team) ? 'table-success' : $match->result ? 'table-danger' : '' %>">
+    <td<%== $match->home eq $team ? ' class="own-team"' : '' %>><%= $match->home %></td>
+    <td class="points"><%= $match->home_points %></td>
+    <td class="points"><%= $match->away_points %></td>
+    <td<%== $match->away eq $team ? ' class="own-team"' : '' %>><%= $match->away %></td>
+</tr>
+% unless ($match->result) {
+<tr class="date">
+    <td><small><%= $match->time->strftime('%d. %b') %>
+        <%= $match->time->strftime('%H:%M') %>
+    </td>
+    <td class="points" colspan="2">@</td>
+    <td><small><%= $match->location %></small></td>
+</tr>
+% }
 % });
+</tbody>
 </table>
 
 <%= link_to 'iCal data for oppdaterte kamper' => url_for() . ".ical" %>
