@@ -63,8 +63,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-12">
-                    <% if ($title) { %>
-                    <h2><%= $title %></h2>
+                    <% my @parts = split(" - ", title); if (scalar(@parts) > 1) { %>
+                    <ol class="breadcrumb">
+                        <% my @stack; foreach (@parts) { %>
+                            <% push(@stack, ($_ =~ m/^(\d)\./ ? "2016/$1" : $_)); %>
+                            <% if (scalar(@stack) == scalar(@parts) ) { %>
+                                <li class="active"><%= $_ %></li>
+                            <% } else { %>
+                                <li><%= link_to $_, url_for('/' . join('/', @stack)) %></li>
+                            <% } %>
+                        <% } %>
+                    </ol>
+                    <% } else { %>
+                        <h2><%= title %></h2>
                     <% } %>
                     <%= content %>
                 </div>

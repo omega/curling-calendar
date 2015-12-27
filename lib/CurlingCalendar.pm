@@ -25,12 +25,15 @@ sub startup {
 
 
     $self->types->type(ical => 'text/calendar');
+    $self->types->type(ics => 'text/calendar');
 
     # Router
     my $r = $self->routes;
 
     # Normal route to controller
     $r->get('/')->to('root#index');
+
+    $r->get('/:league')->to('root#index');
 
     $r->get('/:league/:year/:division')->to('root#division');
     $r->get('/:league/:year/:division/:team')->to('root#team');
