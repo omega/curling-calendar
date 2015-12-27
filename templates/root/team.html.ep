@@ -1,0 +1,9 @@
+% layout 'default';
+% title "$league - $division. divisjon - $team";
+<table class="table">
+<tr><th>Match</th><th>Result</th></tr>
+% $events->each(sub {
+% my $match = shift;
+<tr><td><%= $match->home . " - " . $match->away %></td><td><%= $match->result %></td></tr>
+% });
+</table>
