@@ -7,3 +7,5 @@
 <tr><td><%= $match->home . " - " . $match->away %></td><td><%= $match->result %></td></tr>
 % });
 </table>
+
+<%= link_to 'iCal data for oppdaterte kamper' => url_for() . ".ical" %>
