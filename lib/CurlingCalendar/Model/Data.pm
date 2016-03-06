@@ -195,13 +195,13 @@ package CurlingCalendar::Model::Data::Match {
     sub home_points {
         my $self = shift;
         return unless $self->result;
-        my ($pts) = ( $self->result =~ m|\d+ -| );
+        my ($pts) = ( $self->result =~ m|(\d+) -| );
         return $pts;
     }
     sub away_points {
         my $self = shift;
         return unless $self->result;
-        my ($pts) = ( $self->result =~ m|- \d+| );
+        my ($pts) = ( $self->result =~ m|- (\d+)| );
         return $pts;
     }
     sub is_team_playing {
