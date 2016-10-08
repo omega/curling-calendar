@@ -55,7 +55,6 @@ sub get_season {
     } else {
         # We have JSON?
         #
-        use Data::Dump::Color;
         foreach my $m (@$dom) {
             next unless $m->{home} =~ m/^$division/;
             my $t = DateTime::Format::ISO8601->parse_datetime(delete $m->{time});
