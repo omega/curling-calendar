@@ -2,8 +2,9 @@ package CurlingCalendar::Model::Data 0.99;
 
 use 5.014;
 use DateTime::Format::Strptime;
+use DateTime::Format::ISO8601;
 use Mojo::Collection;
-
+use Scalar::Util qw();
 sub get_season {
     my ($self, $league, $year, $division, $dom) = @_;
 
@@ -14,42 +15,54 @@ sub get_season {
     );
 
 
-    my $fmt = DateTime::Format::Strptime->new(
-        pattern => '%Y/%d/%m %R',
-        locale => 'nb_NO',
-        time_zone => 'Europe/Oslo',
-        on_error => 'croak',
-    );
-    $dom->find('table tr')->each(sub {
-            state $count = 0;
-            my $row = shift;
-            if ($count) {
-                # this is a proper row
-                my $d = $row->child_nodes->map('text')->flatten->compact->to_array;
-                return unless scalar(@$d);
-                my $date = $fmt->parse_datetime(
-                    ($d->[0] =~ m|/1\d$| ? '2015' : '2016') . "/" . shift(@$d)
-                    . " " . shift(@$d)
-                );
-                my $location = shift(@$d) . ", " . shift(@$d);
-                my $res;
-                if (scalar(@$d) > 2) {
-                    # We have a result
-                    $res = join(" ", @$d[2..4]);
-                }
+    if (Scalar::Util::blessed($dom) and $dom->isa('Mojo::DOM')) {
+        my $fmt = DateTime::Format::Strptime->new(
+            pattern => '%Y/%d/%m %R',
+            locale => 'nb_NO',
+            time_zone => 'Europe/Oslo',
+            on_error => 'croak',
+        );
+        $dom->find('table tr')->each(sub {
+                state $count = 0;
+                my $row = shift;
+                if ($count) {
+                    # this is a proper row
+                    my $d = $row->child_nodes->map('text')->flatten->compact->to_array;
+                    return unless scalar(@$d);
+                    my $date = $fmt->parse_datetime(
+                        ($d->[0] =~ m|/1\d$| ? '2015' : '2016') . "/" . shift(@$d)
+                        . " " . shift(@$d)
+                    );
+                    my $location = shift(@$d) . ", " . shift(@$d);
+                    my $res;
+                    if (scalar(@$d) > 2) {
+                        # We have a result
+                        $res = join(" ", @$d[2..4]);
+                    }
 
-                $season->add_match(CurlingCalendar::Model::Data::Match->new(
-                        home => $d->[0],
-                        away => $d->[1],
-                        time => $date,
-                        location => $location,
-                        result => $res,
-                    )
-                );
+                    $season->add_match(CurlingCalendar::Model::Data::Match->new(
+                            home => $d->[0],
+                            away => $d->[1],
+                            time => $date,
+                            location => $location,
+                            result => $res,
+                        )
+                    );
+                }
+                $count++;
             }
-            $count++;
+        );
+    } else {
+        # We have JSON?
+        #
+        use Data::Dump::Color;
+        foreach my $m (@$dom) {
+            next unless $m->{home} =~ m/^$division/;
+            my $t = DateTime::Format::ISO8601->parse_datetime(delete $m->{time});
+
+            $season->add_match(CurlingCalendar::Model::Data::Match->new(%$m, time => $t));
         }
-    );
+    }
     return $season;
 
 }

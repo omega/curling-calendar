@@ -6,10 +6,14 @@ use CurlingCalendar::Model::Data;
 
 use HTTP::Tiny;
 use Encode;
+use Mojo::JSON qw(decode_json);
+
 
 # This method will run once at server start
 sub startup {
     my $self = shift;
+
+      push @{$self->commands->namespaces}, 'CurlingCalendar::Command';
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
@@ -60,25 +64,36 @@ sub startup {
     );
     $self->helper('curling.fetch_season' => sub {
             my ($c, $parser) = @_;
-            my $division = $c->stash->{division};
-            my $cache_key = join("_", $c->stash->{league}, $c->stash->{year}, $division);
+            my $season;
 
-            my $html;
+            my $data;
+            if ($c->stash->{year} == 2017) {
+                # Fetch from local file first
 
-            if ($html = $c->chi->get($cache_key)) {
-                $c->app->log->debug("found $cache_key in cache");
+                $data = decode_json(path('matchs_2017.json')->slurp);
+                
             } else {
-                my $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
-                $c->app->log->debug("Fetching content from $url");
+                my $division = $c->stash->{division};
+                my $cache_key = join("_", $c->stash->{league}, $c->stash->{year}, $division);
 
-                my $res = HTTP::Tiny->new->get($url);
+                my $html;
 
-                $html = Encode::decode_utf8( $res->{content} );
-                $c->chi->set($cache_key => $html, '1 day');
+                if ($html = $c->chi->get($cache_key)) {
+                    $c->app->log->debug("found $cache_key in cache");
+                } else {
+                    my $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
+                    $c->app->log->debug("Fetching content from $url");
+
+                    my $res = HTTP::Tiny->new->get($url);
+
+                    $html = Encode::decode_utf8( $res->{content} );
+                    $c->chi->set($cache_key => $html, '1 day');
+                }
+                $data = Mojo::DOM->new( $html );
             }
-            my $season = CurlingCalendar::Model::Data->get_season(
+            $season = CurlingCalendar::Model::Data->get_season(
                 $c->stash->{league}, $c->stash->{year}, $c->stash->{division},
-                Mojo::DOM->new( $html ),
+                $data,
             );
             $parser->($season);
         });
