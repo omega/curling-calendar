@@ -67,30 +67,28 @@ sub startup {
             my $season;
 
             my $data;
-            if ($c->stash->{year} == 2017) {
-                # Fetch from local file first
+            my $division = $c->stash->{division};
+            my $cache_key = join("_", $c->stash->{league}, $c->stash->{year}, $division);
 
-                $data = decode_json(path('matchs_2017.json')->slurp);
-                
+            my $html;
+
+            if ($html = $c->chi->get($cache_key)) {
+                $c->app->log->debug("found $cache_key in cache");
             } else {
-                my $division = $c->stash->{division};
-                my $cache_key = join("_", $c->stash->{league}, $c->stash->{year}, $division);
-
-                my $html;
-
-                if ($html = $c->chi->get($cache_key)) {
-                    $c->app->log->debug("found $cache_key in cache");
+                my $url;
+                if ($c->stash->{year} >= 2017) {
+                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8);
                 } else {
-                    my $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
-                    $c->app->log->debug("Fetching content from $url");
-
-                    my $res = HTTP::Tiny->new->get($url);
-
-                    $html = Encode::decode_utf8( $res->{content} );
-                    $c->chi->set($cache_key => $html, '1 day');
+                    $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
                 }
-                $data = Mojo::DOM->new( $html );
+                $c->app->log->debug("Fetching content from $url");
+
+                my $res = HTTP::Tiny->new->get($url);
+
+                $html = Encode::decode_utf8( $res->{content} );
+                $c->chi->set($cache_key => $html, '1 day');
             }
+            $data = Mojo::DOM->new( $html );
             $season = CurlingCalendar::Model::Data->get_season(
                 $c->stash->{league}, $c->stash->{year}, $c->stash->{division},
                 $data,

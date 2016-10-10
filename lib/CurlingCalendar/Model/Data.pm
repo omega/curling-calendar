@@ -30,7 +30,7 @@ sub get_season {
                     my $d = $row->child_nodes->map('text')->flatten->compact->to_array;
                     return unless scalar(@$d);
                     my $date = $fmt->parse_datetime(
-                        ($d->[0] =~ m|/1\d$| ? '2015' : '2016') . "/" . shift(@$d)
+                        ($d->[0] =~ m|/1\d$| ? $year - 1 : $year) . "/" . shift(@$d)
                         . " " . shift(@$d)
                     );
                     my $location = shift(@$d) . ", " . shift(@$d);
