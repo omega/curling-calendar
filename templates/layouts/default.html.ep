@@ -8,7 +8,7 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
 
         <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 <style>
 .navbar + .container {
     margin-top: 2rem;
@@ -45,13 +45,13 @@
 </style>
     </head>
     <body>
-        <nav class="navbar navbar-dark bg-primary navbar-full">
-                <a class="navbar-brand" href="<%= url_for('/') %>">Curling-kalendere</a>
-            <button class="navbar-toggler hidden-sm-up pull-xs-right" type="button" data-toggle="collapse" data-target="#divisionMenu">
-                &#9776;
+        <nav class="navbar navbar-dark bg-primary navbar-full navbar-expand-lg">
+            <a class="navbar-brand" href="<%= url_for('/') %>">Curling-kalendere</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#divisionMenu">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-toggleable-xs" id="divisionMenu">
-                <ul class="nav navbar-nav">
+            <div class="collapse navbar-collapse" id="divisionMenu">
+                <ul class="navbar-nav mr-auto">
 % foreach (1..3) {
                     <li class="nav-item">
                         <a href="<%= url_for("/OACK/2018/$_") %>" class="nav-link"><%= $_ %>. division</a>
@@ -62,15 +62,15 @@
         </nav>
         <div class="container">
             <div class="row">
-                <div class="col-xs-12">
+                <div class="col">
                     <% my @parts = split(" - ", title); if (scalar(@parts) > 1) { %>
                     <ol class="breadcrumb">
                         <% my @stack; foreach (@parts) { %>
-                            <% push(@stack, ($_ =~ m/^(\d)\./ ? "2016/$1" : $_)); %>
+                            <% push(@stack, ($_ =~ m/^(\d)\./ ? "2018/$1" : $_)); %>
                             <% if (scalar(@stack) == scalar(@parts) ) { %>
-                                <li class="active"><%= $_ %></li>
+                                <li class="active breadcrumb-item"><%= $_ %></li>
                             <% } else { %>
-                                <li><%= link_to $_, url_for('/' . join('/', @stack)) %></li>
+                                <li class="breadcrumb-item"><%= link_to $_, url_for('/' . join('/', @stack)) %></li>
                             <% } %>
                         <% } %>
                     </ol>
@@ -81,7 +81,8 @@
                 </div>
             </div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
     </body>
 </html>
