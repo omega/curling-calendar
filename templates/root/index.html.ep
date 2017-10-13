@@ -10,7 +10,7 @@ iphone</p>
 <h2>Tabeller</h2>
 <ul>
 % foreach (1..3) {
-<li><%= link_to "$_. divisjon", url_for("/OACK/2017/$_") %></li>
+<li><%= link_to "$_. divisjon", url_for("/OACK/2018/$_") %></li>
 % }
 </ul>
 

@@ -54,7 +54,7 @@
                 <ul class="nav navbar-nav">
 % foreach (1..3) {
                     <li class="nav-item">
-                        <a href="<%= url_for("/OACK/2016/$_") %>" class="nav-link"><%= $_ %>. division</a>
+                        <a href="<%= url_for("/OACK/2018/$_") %>" class="nav-link"><%= $_ %>. division</a>
                     </li>
 % }
                 </ul>

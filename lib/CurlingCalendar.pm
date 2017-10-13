@@ -8,7 +8,6 @@ use HTTP::Tiny;
 use Encode;
 use Mojo::JSON qw(decode_json);
 
-
 # This method will run once at server start
 sub startup {
     my $self = shift;
@@ -76,14 +75,16 @@ sub startup {
                 $c->app->log->debug("found $cache_key in cache");
             } else {
                 my $url;
-                if ($c->stash->{year} >= 2017) {
+                if ($c->stash->{year} >= 2018) {
+                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 6);
+                } elsif ($c->stash->{year} >= 2017) {
                     $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8);
                 } else {
                     $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
                 }
                 $c->app->log->debug("Fetching content from $url");
 
-                my $res = HTTP::Tiny->new->get($url);
+                my $res = HTTP::Tiny->new(max_redirect => 0)->get($url);
 
                 $html = Encode::decode_utf8( $res->{content} );
                 $c->chi->set($cache_key => $html, '1 day');

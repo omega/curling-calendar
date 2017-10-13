@@ -5,6 +5,7 @@ use DateTime::Format::Strptime;
 use DateTime::Format::ISO8601;
 use Mojo::Collection;
 use Scalar::Util qw();
+
 sub get_season {
     my ($self, $league, $year, $division, $dom) = @_;
 
@@ -27,7 +28,7 @@ sub get_season {
                 my $row = shift;
                 if ($count) {
                     # this is a proper row
-                    my $d = $row->child_nodes->map('text')->flatten->compact->to_array;
+                    my $d = $row->child_nodes->map('all_text')->flatten->compact->to_array;
                     return unless scalar(@$d);
                     my $date = $fmt->parse_datetime(
                         ($d->[0] =~ m|/1\d$| ? $year - 1 : $year) . "/" . shift(@$d)
