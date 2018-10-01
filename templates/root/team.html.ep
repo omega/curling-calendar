@@ -26,4 +26,5 @@
 </tbody>
 </table>
 
-<%= link_to 'iCal data for oppdaterte kamper' => url_for() . ".ical" %>
+<a href="<%= url_for()->to_abs->scheme('webcal') . ".ical" %>" class="btn btn-link">
+iCal for oppdaterte kamper</a>
