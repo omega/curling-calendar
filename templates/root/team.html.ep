@@ -7,7 +7,7 @@
 <tbody>
 % $events->each(sub {
 % my $match = shift;
-<tr class="<%= $match->is_team_victorious($team) ? 'table-success' : $match->result ? 'table-danger' : '' %>">
+<tr class="<%= $match->is_team_victorious($team) ? 'table-success' : $match->is_team_lost($team) ? 'table-danger' : $match->result ? 'table-info' : '' %>">
     <td<%== $match->home eq $team ? ' class="own-team"' : '' %>><%= $match->home %></td>
     <td class="points"><%= $match->home_points %></td>
     <td class="points"><%= $match->away_points %></td>

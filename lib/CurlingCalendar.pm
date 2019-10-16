@@ -75,7 +75,9 @@ sub startup {
                 $c->app->log->debug("found $cache_key in cache");
             } else {
                 my $url;
-                if ($c->stash->{year} >= 2019) {
+                if ($c->stash->{year} >= 2020) {
+                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 14);
+                } elsif ($c->stash->{year} >= 2019) {
                     $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 10);
                 } elsif ($c->stash->{year} >= 2018) {
                     $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 6);

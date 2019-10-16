@@ -127,6 +127,9 @@ package CurlingCalendar::Model::Data::Season {
                         $teams{$m->home}->{points} += 2;
                         $teams{$m->home}->{beat}->{$m->away} = 1;
 
+                    } elsif (eval $m->result == 0) {
+                        $teams{$m->home}->{points} += 1;
+                        $teams{$m->away}->{points} += 1;
                     } else {
                         $teams{$m->away}->{points} += 2;
                         $teams{$m->away}->{beat}->{$m->home} = 1;
@@ -231,6 +234,19 @@ package CurlingCalendar::Model::Data::Match {
         if (eval $self->result > 0 and $team eq lc($self->home)) {
             return 1;
         } elsif(eval $self->result < 0  and $team eq lc($self->away)) {
+            return 1;
+        }
+    }
+
+    sub is_team_lost {
+        my ($self, $team) = @_;
+        $team = lc($team);
+        return unless $self->result;
+        return unless $self->is_team_playing($team);
+
+        if (eval $self->result < 0 and $team eq lc($self->home)) {
+            return 1;
+        } elsif (eval $self->result > 0 and $team eq lc($self->away)) {
             return 1;
         }
     }
