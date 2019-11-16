@@ -76,22 +76,26 @@ sub startup {
             } else {
                 my $url;
                 if ($c->stash->{year} >= 2020) {
-                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 14);
+                    $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 14);
                 } elsif ($c->stash->{year} >= 2019) {
-                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 10);
+                    $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 10);
                 } elsif ($c->stash->{year} >= 2018) {
-                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 6);
+                    $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 6);
                 } elsif ($c->stash->{year} >= 2017) {
-                    $url = 'http://www.oack.no/serie/oppsett.php?a=' . ($division + 8);
+                    $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8);
                 } else {
                     $url = 'http://www.runewaage.com/oack2/oppsett.php?a=' . ($division + 5);
                 }
                 $c->app->log->debug("Fetching content from $url");
 
                 my $res = HTTP::Tiny->new(max_redirect => 0)->get($url);
-
-                $html = Encode::decode_utf8( $res->{content} );
-                $c->chi->set($cache_key => $html, '1 day');
+                if (!($res->{content} =~ m|<h1 id="pageName">Kampoppsett|)) {
+                    $c->app->log->info("Error fetching data!");
+                    $html = '';
+                } else {
+                    $html = Encode::decode_utf8( $res->{content} );
+                    $c->chi->set($cache_key => $html, '1 day');
+                }
             }
             $data = Mojo::DOM->new( $html );
             $season = CurlingCalendar::Model::Data->get_season(
