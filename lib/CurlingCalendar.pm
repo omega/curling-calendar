@@ -15,7 +15,7 @@ sub startup {
       push @{$self->commands->namespaces}, 'CurlingCalendar::Command';
 
     # Documentation browser under "/perldoc"
-    $self->plugin('PODRenderer');
+    #$self->plugin('PODRenderer');
     $self->plugin('CHI' => {
             default => {
                 driver => 'File',
@@ -75,7 +75,9 @@ sub startup {
                 $c->app->log->debug("found $cache_key in cache");
             } else {
                 my $url;
-                if ($c->stash->{year} >= 2020) {
+                if ($c->stash->{year} >= 2021) {
+                    $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 20);
+                } elsif ($c->stash->{year} >= 2020) {
                     $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 14);
                 } elsif ($c->stash->{year} >= 2019) {
                     $url = 'https://www.oack.no/serie/oppsett.php?a=' . ($division + 8 + 10);
